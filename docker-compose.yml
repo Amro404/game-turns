@@ -1,0 +1,40 @@
+version: '3.8'
+
+networks:
+  game-turns:
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.dockerfile
+    ports:
+      - 90:90
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - php
+  php:
+    build:
+      context: .
+      dockerfile: php.dockerfile
+    volumes:
+       - ./src:/var/www/html
+
+  composer:
+    build:
+      context: .
+      dockerfile: composer.dockerfile
+    volumes:
+      - ./src:/var/www/html
+    command: ["composer", "install"]
+    working_dir: /var/www/html
+
+  artisan:
+    build:
+      context: .
+      dockerfile: php.dockerfile
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html
+    entrypoint: ["php", "/var/www/html/artisan"]
